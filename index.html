@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>title</title>
+
+  <link href="style.css" rel='stylesheet'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
+  <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+  <script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyD5xnKe7yYIwpyb2u6EfHpQPwTw-biCFcs",
+    authDomain: "wifibean.firebaseapp.com",
+    databaseURL: "https://wifibean.firebaseio.com",
+    storageBucket: "wifibean.appspot.com",
+  };
+  firebase.initializeApp(config);
+  </script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrLngjTD6HG04lrSNQ7DpeAqehf8WNi0Q&libraries=places&callback=initMap" async defer></script>
+
+  <script src='script.js'></script>
+</head>
+<body>
+
+
+  <div id="floating-panel">
+    <input id="address" type="textbox">
+    <input id="submit" type="button" value="Geocode">
+  </div>
+  <div id="map"></div>
+</body>
+
+</html>
