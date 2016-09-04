@@ -2,9 +2,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>title</title>
+  <title>wifiBean</title>
 
   <link href="style.css" rel='stylesheet'>
+  <link href='http://fonts.googleapis.com/css?family=Oswald:400,700|Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 
   <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
@@ -19,18 +20,25 @@
   firebase.initializeApp(config);
   </script>
 
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrLngjTD6HG04lrSNQ7DpeAqehf8WNi0Q&libraries=places&callback=initMap" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrLngjTD6HG04lrSNQ7DpeAqehf8WNi0Q&libraries=places" async defer></script>
 
   <script src='script.js'></script>
 </head>
 <body>
 
-
-  <div id="floating-panel">
-    <input id="address" type="textbox">
-    <input id="submit" type="button" value="Geocode">
+  <div class="splash fade-in">
+    <h1 class="splash-title fade-in">wifiBean</h1>
+    <a href="#" class="splash-arrow fade-in"><img src="down-arrow.png" alt="" /></a>
+  </div>
+  <div class="wrapper">
+    <div id="floating-panel">
+      <input id="address" type="textbox" placeholder="Location">
+      <input id="submit" type="button" value="Search">
+    </div>
   </div>
   <div id="map"></div>
+
 </body>
+
 
 </html>

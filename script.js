@@ -2,21 +2,46 @@ var map;
 var markerArray= [];
 var infowindow;
 var pyrmont = {lat: 40.720029, lng: -74.006936};
+var database = firebase.database().ref('stores');
+
+$( document ).ready(function() {
+	if($(".splash").is(":visible"))
+	{
+		$(".wrapper").css({"opacity":"0"});
+	}
+	$(".splash-arrow").click(function()
+	{
+		$(".splash").slideUp("800", function() {
+			  $(".wrapper").delay(100).animate({"opacity":"1.0"},800);
+        initMap();
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: pyrmont,
+          zoom: 15
+        });
+		 });
+	});
+
+});
+
 
 
 function initMap() {
 
 
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: pyrmont,
-    zoom: 15
-  });
+
   var geocoder = new google.maps.Geocoder();
 
   document.getElementById('submit').addEventListener('click', function() {
     markerBounds = new google.maps.LatLngBounds();
     geocodeAddress(geocoder, map);
   });
+
+  document.getElementById('address').onkeydown = function(e){
+   if(e.keyCode == 13){
+     markerBounds = new google.maps.LatLngBounds();
+     geocodeAddress(geocoder, map);
+   }
+};
 
   var markerBounds = new google.maps.LatLngBounds();
   function geocodeAddress(geocoder) {
@@ -51,36 +76,118 @@ function initMap() {
       }
       markerArray = [];
       for (i = 0; i < results.length; i++) {
-        createMarker(results[i]);
-        console.log(results[i].place_id);
+
+        //createMarker(results[i]);
+        databasecheck(results[i]);
 
 
-
-      }
 
     }
 
   }
 
-  function createMarker(place) {
-    var placeLoc = place.geometry.location;
+}
 
-    var marker = new google.maps.Marker({
-      map: map,
-      position: place.geometry.location
+function createMarker(place) {
+  //var placeLoc = place.geometry.location;
+
+  var marker = new google.maps.Marker({
+    map: map,
+    position: place.geometry.location
+  });
+  markerArray.push(marker);
+
+  markerBounds.extend(marker.position);
+  map.fitBounds(markerBounds);
+  var location = place.place_id;
+  google.maps.event.addListener(marker, 'click', function() {
+    database.once("value")
+    .then(function(snapshot) {
+      var hasStore = snapshot.child(location).child('name').val();
+
+      var hasWifi = snapshot.child(location).child('wifi').val();
+      var hasOutlet = snapshot.child(location).child('outlet').val();
+			var hasRestroom = snapshot.child(location).child('restroom').val();
+			var wifiCheck = '';
+			var outletCheck = '';
+			var restroomCheck = '';
+			if (hasWifi) {
+				wifiCheck = 'checked';
+			}
+			if (hasOutlet) {
+				outletCheck = 'checked';
+			}
+			if (hasRestroom) {
+				restroomCheck = 'checked';
+			}
+			console.log(hasStore);
+
+			console.log(hasWifi);
+			console.log(hasOutlet);
+			console.log(hasRestroom);
+      var contentString = '<h3>'+hasStore + '</h3>' + '<p><input type="checkbox" class="wifi" id=' + location +' ' + wifiCheck +'><label>Free Wifi</label></p>'+ '<p><input type="checkbox" class="outlet" id=' + location +' ' + outletCheck +'><label>Outlet</label></p>' + '<p><input type="checkbox" class="restroom" id=' + location +' ' + restroomCheck +'><label>Restroom</label></p>';
+			infowindow.setContent(contentString);
+
     });
-    markerArray.push(marker);
 
-    markerBounds.extend(marker.position);
-    map.fitBounds(markerBounds);
+    //infowindow.setContent(place.name);
+    infowindow.open(map, this);
 
-    google.maps.event.addListener(marker, 'click', function() {
-      infowindow.setContent(place.name);
-      infowindow.open(map, this);
-    });
-  }
+  });
 
 }
-//firebase
 
-var database = firebase.database().ref('list');
+
+ function databasecheck(shop) {
+
+     var storeLocation = shop.place_id;
+     var storename = shop.name;
+     database.once("value")
+     .then(function(snapshot) {
+       var hasStore = snapshot.hasChild(storeLocation);
+       if (hasStore){
+          createMarker(shop);
+
+       }
+       else {
+         database.child(storeLocation).set({name: storename, wifi: false, outlet: false, restroom: false});
+         createMarker(shop);
+       }
+
+  });
+
+}
+
+}
+
+$(document).on('change', '.wifi', function() {
+    // your code
+    console.log($(this).attr('id'));
+    var key = $(this).attr('id');
+    var itemRef = database.child(key);
+    itemRef.update({
+      wifi: $(this).prop('checked')
+    });
+});
+
+$(document).on('change', '.outlet', function() {
+    // your code
+    console.log($(this).attr('id'));
+    var key2 = $(this).attr('id');
+    var itemRef2 = database.child(key2);
+    itemRef2.update({
+      outlet: $(this).prop('checked')
+    });
+});
+$(document).on('change', '.restroom', function() {
+    // your code
+    console.log($(this).attr('id'));
+    var key3 = $(this).attr('id');
+    var itemRef3 = database.child(key3);
+    itemRef3.update({
+      restroom: $(this).prop('checked')
+    });
+});
+
+
+//firebase
